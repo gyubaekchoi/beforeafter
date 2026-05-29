@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B&A 리뷰 시나리오 프로토타입</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f3f4f6; overflow: hidden; }
+    .wanted-blue { color: #3366FF; }
+    .bg-wanted-blue { background-color: #3366FF; }
+    .border-wanted-blue { border-color: #3366FF; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const STEPS = [
+      { id: 1, title: 'B&A 기능 관리 페이지', desc: '관리자가 어드민에서 기능 활성화 및 설정' },
+      { id: 2, title: '리뷰 작성 페이지', desc: '유저의 기존 첫 구매 일반 리뷰 작성' },
+      { id: 3, title: '작성 완료 페이지', desc: 'N주 뒤 B&A 리뷰 안내 및 비포 사진 유도' },
+      { id: 4, title: '대기 기간 경과 후 알림톡', desc: '설정 기간 이후 B&A 리뷰 요청 알림톡 발송' },
+      { id: 5, title: 'B&A 리뷰 작성 페이지', desc: 'Before/After 사진 2장 필수 첨부 폼' },
+      { id: 6, title: 'B&A 사용 리뷰 뱃지 노출', desc: '상품 상세 위젯에 전용 뱃지 및 분할 뷰 노출' },
+      { id: 7, title: '작성자 추가 적립금 지급', desc: '작성 완료 후 설정된 추가 포인트 즉시 지급' }
+    ];
+
+    // --- STEP 1: Admin ---
+    const Step1_Admin = () => (
+      <div className="flex h-full bg-gray-50">
+        <div className="w-56 bg-white border-r border-gray-200 p-6">
+          <h1 className="font-bold text-gray-900 mb-8">Admin Center</h1>
+          <nav className="space-y-2">
+            <div className="px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-50">대시보드</div>
+            <div className="px-4 py-2 text-sm bg-blue-50 text-blue-700 font-semibold rounded-lg">리뷰 설정</div>
+          </nav>
+        </div>
+        <div className="flex-1 p-10 overflow-y-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">장기 사용 (B&A) 리뷰 설정</h2>
+          <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-3xl shadow-sm">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-6 mb-6">
+              <div>
+                <h3 className="text-lg font-semibold">기능 활성화</h3>
+                <p className="text-sm text-gray-500">대기 기간이 지난 고객에게 리뷰 작성을 요청합니다.</p>
+              </div>
+              <div className="w-11 h-6 bg-blue-600 rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+            </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold mb-2">발송 대기 기간</label>
+                <select className="w-full max-w-xs border border-gray-300 rounded-lg px-4 py-2 text-sm"><option>4주 후 발송</option></select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2">추가 지급 적립금</label>
+                <div className="flex items-center gap-2 max-w-xs"><input type="number" defaultValue="1500" className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" /><span>원</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- STEP 2: Normal Review ---
+    const Step2_NormalReview = () => {
+      const [rating, setRating] = useState(5);
+      return (
+        <div className="flex justify-center items-center h-full bg-gray-100 p-4">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
+            <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <span className="font-semibold text-lg">일반 리뷰 작성하기</span>
+              <span className="text-gray-400">✕</span>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gray-200 rounded-lg shrink-0"></div>
+                <div><h3 className="font-bold">시카 병풀 진정 크림</h3><p className="text-sm text-gray-500">첫 구매 리뷰를 남겨주세요.</p></div>
+              </div>
+              <div className="mb-6 flex gap-1">
+                {[1,2,3,4,5].map(s => <span key={s} className="text-3xl text-yellow-400 cursor-pointer">★</span>)}
+              </div>
+              <textarea className="w-full border border-gray-300 rounded-xl p-4 text-sm resize-none mb-4" rows="4" placeholder="어떤 점이 좋았나요?"></textarea>
+              <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400 text-sm mb-6">📷 사진</div>
+              <button className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl">리뷰 등록하기</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- STEP 3: Complete Banner ---
+    const Step3_CompleteBanner = () => (
+      <div className="flex justify-center items-center h-full bg-gray-100 p-4">
+        <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl p-10 text-center">
+          <div className="text-5xl mb-4">🎉</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">리뷰 작성이 완료되었습니다!</h2>
+          <p className="text-gray-500 mb-8">적립금 500원이 지급되었습니다.</p>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-left relative overflow-hidden">
+            <h3 className="text-lg font-bold text-blue-900 mb-2 flex items-center gap-2"><span className="text-xl">✨</span> 4주 뒤에 한 번 더 혜택을 받으세요!</h3>
+            <p className="text-blue-800 text-sm leading-relaxed mb-4">
+              지금 사용 전 사진(Before)을 미리 찍어두시면,<br/>4주 뒤 애프터(After) 사진과 함께 <strong>B&A 리뷰를 남기고 1,500원을 추가로 받으실 수 있습니다!</strong>
+            </p>
+            <button className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">확인 (미리 찍어둘게요)</button>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- STEP 4: Alimtalk ---
+    const Step4_Alimtalk = () => (
+      <div className="flex justify-center items-center h-full bg-gray-800 p-4">
+        <div className="w-[320px] h-[600px] bg-[#B2C7D9] rounded-[2.5rem] p-4 shadow-2xl relative border-[12px] border-black flex flex-col">
+          {/* Status bar */}
+          <div className="flex justify-between text-[10px] px-2 mb-4"><span>12:00</span><span>🔋</span></div>
+          {/* Chat area */}
+          <div className="flex-1">
+            <div className="text-center text-xs text-gray-500 mb-4 bg-black bg-opacity-10 rounded-full py-1 px-3 w-max mx-auto">오늘</div>
+            <div className="flex gap-2">
+              <div className="w-8 h-8 rounded-full bg-yellow-300 flex items-center justify-center text-[10px] font-bold">ALPHA</div>
+              <div className="flex-1">
+                <div className="text-[11px] text-gray-600 mb-1">알파몰</div>
+                <div className="bg-white rounded-lg p-3 text-sm shadow-sm relative">
+                  <span className="font-bold block mb-2">[장기 사용 리뷰 안내]</span>
+                  안녕하세요 김고객님!<br/>'시카 병풀 진정 크림'을 구매하신 지 4주가 지났어요.<br/><br/>
+                  미리 찍어두신 Before 사진과 현재 After 사진을 올리고 <strong>1,500원</strong>을 받아가세요!
+                  <button className="w-full mt-3 bg-gray-100 border border-gray-200 py-2 text-center font-semibold rounded-md">B&A 리뷰 작성하기</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- STEP 5: B&A Form ---
+    const Step5_BAForm = () => (
+      <div className="flex justify-center items-center h-full bg-gray-100 p-4">
+        <div className="bg-white w-full max-w-xl rounded-2xl shadow-xl overflow-y-auto max-h-full custom-scrollbar">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10 font-bold text-lg">장기 사용 (B&A) 리뷰 작성하기</div>
+          <div className="p-6">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
+              <span className="text-2xl">💡</span>
+              <div>
+                <h3 className="text-sm font-bold text-blue-900 mb-1">가이드라인</h3>
+                <p className="text-xs text-blue-800">동일한 조명, 동일한 각도에서 찍은 두 장의 사진이 필요합니다.</p>
+              </div>
+            </div>
+            
+            <h3 className="font-bold mb-3">1. 사진 등록 <span className="text-red-500">*</span></h3>
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 aspect-video rounded-xl border-2 border-dashed border-blue-400 bg-blue-50 flex flex-col items-center justify-center text-blue-600">
+                <span className="font-bold text-sm">Before 첨부 완료</span>
+              </div>
+              <div className="flex-1 aspect-video rounded-xl border-2 border-dashed border-blue-400 bg-blue-50 flex flex-col items-center justify-center text-blue-600">
+                <span className="font-bold text-sm">After 첨부 완료</span>
+              </div>
+            </div>
+
+            <h3 className="font-bold mb-3">2. 상세 리뷰 <span className="text-red-500">*</span></h3>
+            <textarea className="w-full border border-gray-300 rounded-xl p-4 text-sm resize-none mb-6" rows="4" defaultValue="확실히 4주 정도 쓰니까 붉은기가 많이 들어간 게 보입니다! 대만족이에요."></textarea>
+
+            <button className="w-full bg-wanted-blue text-white font-bold py-4 rounded-xl">1,500원 받고 등록하기</button>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- STEP 6: Widget ---
+    const Step6_Widget = () => (
+      <div className="h-full bg-white p-10 overflow-y-auto">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">리뷰 위젯 노출</h2>
+        <div className="max-w-md border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex gap-3">
+              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+              <div><div className="font-bold text-sm">user***</div><div className="text-yellow-400 text-xs">★★★★★</div></div>
+            </div>
+            <div className="bg-blue-50 text-wanted-blue text-xs font-bold px-2 py-1 rounded">💰 B&A 리뷰</div>
+          </div>
+          <div className="flex gap-1 mb-4 h-32 rounded-lg overflow-hidden">
+            <div className="flex-1 bg-gray-300 relative">
+              <div className="absolute top-1 left-1 bg-black bg-opacity-70 text-white text-[10px] px-1.5 rounded">BEFORE</div>
+            </div>
+            <div className="flex-1 bg-gray-400 relative">
+              <div className="absolute top-1 left-1 bg-black bg-opacity-70 text-white text-[10px] px-1.5 rounded">AFTER</div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-800 leading-relaxed mb-4">확실히 4주 정도 쓰니까 붉은기가 많이 들어간 게 보입니다! 대만족이에요.</p>
+        </div>
+      </div>
+    );
+
+    // --- STEP 7: Reward ---
+    const Step7_Reward = () => (
+      <div className="flex justify-center items-center h-full bg-gray-100 p-4">
+        <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center animate-bounce">
+          <div className="text-5xl mb-4">💸</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">리뷰 등록 완료!</h2>
+          <p className="text-gray-600 mb-6">장기 사용 리뷰 작성 보상으로<br/><strong className="text-wanted-blue text-lg">1,500원</strong>이 지급되었습니다.</p>
+          <button className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl">확인</button>
+        </div>
+      </div>
+    );
+
+    const App = () => {
+      const [step, setStep] = useState(1);
+
+      const renderStepContent = () => {
+        switch(step) {
+          case 1: return <Step1_Admin />;
+          case 2: return <Step2_NormalReview />;
+          case 3: return <Step3_CompleteBanner />;
+          case 4: return <Step4_Alimtalk />;
+          case 5: return <Step5_BAForm />;
+          case 6: return <Step6_Widget />;
+          case 7: return <Step7_Reward />;
+          default: return null;
+        }
+      };
+
+      return (
+        <div className="flex h-screen bg-gray-100 overflow-hidden">
+          {/* Sidebar */}
+          <div className="w-[340px] bg-white border-r border-gray-200 shadow-sm z-20 flex flex-col">
+            <div className="p-6 border-b border-gray-100">
+              <h1 className="text-xl font-bold text-gray-900">B&A 리뷰 시나리오</h1>
+              <p className="text-sm text-gray-500 mt-1">PRD 기반 1~7단계 흐름 시뮬레이터</p>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+              {STEPS.map((s, index) => (
+                <button 
+                  key={s.id}
+                  onClick={() => setStep(s.id)}
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 relative
+                    ${step === s.id 
+                      ? 'bg-blue-50 border-blue-400 shadow-sm' 
+                      : step > s.id 
+                        ? 'border-transparent bg-white shadow-sm opacity-60' 
+                        : 'border-transparent bg-gray-50 hover:bg-gray-100'}`}
+                >
+                  <div className={`text-xs font-bold mb-1 ${step === s.id ? 'text-blue-600' : 'text-gray-400'}`}>STEP {s.id}</div>
+                  <div className={`font-bold text-sm ${step === s.id ? 'text-gray-900' : 'text-gray-700'}`}>{s.title}</div>
+                  <div className="text-xs text-gray-500 mt-1 line-clamp-2">{s.desc}</div>
+                  
+                  {/* Active Indicator Arrow */}
+                  {step === s.id && (
+                    <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-t-2 border-r-2 border-blue-400 rotate-45 transform translate-x-1"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+            {/* Progress Controls */}
+            <div className="p-4 border-t border-gray-100 flex gap-2">
+              <button 
+                onClick={() => setStep(Math.max(1, step - 1))}
+                disabled={step === 1}
+                className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-lg disabled:opacity-50"
+              >이전</button>
+              <button 
+                onClick={() => setStep(Math.min(7, step + 1))}
+                disabled={step === 7}
+                className="flex-1 py-3 bg-wanted-blue text-white font-bold rounded-lg disabled:opacity-50 shadow-md hover:bg-blue-700"
+              >다음 ➔</button>
+            </div>
+          </div>
+
+          {/* Main Area */}
+          <div className="flex-1 relative flex flex-col bg-[#eef2f6]">
+            {/* Top Bar for Context */}
+            <div className="h-12 bg-white border-b border-gray-200 flex items-center px-6 justify-between shadow-sm z-10">
+              <span className="text-sm font-semibold text-gray-500">현재 시뮬레이션 화면:</span>
+              <span className="text-sm font-bold text-gray-900">{STEPS.find(s => s.id === step)?.title}</span>
+            </div>
+            
+            {/* Display Area */}
+            <div className="flex-1 overflow-hidden relative">
+              {renderStepContent()}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
